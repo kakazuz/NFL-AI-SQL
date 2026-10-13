@@ -1,0 +1,48 @@
+{
+  "strategy": "zero_shot",
+  "prompt_prefix": "create table conferences (\n    conference_id integer primary key,\n    name varchar(10) not null\n);\n\ncreate table teams (\n    team_id integer primary key,\n    name varchar(40) not null,\n    city varchar(40) not null,\n    conference_id integer not null,\n    foreign key (conference_id) references conferences (conference_id)\n);\n\ncreate table coaches (\n    coach_id integer primary key,\n    name varchar(50) not null,\n    team_id integer not null,\n    foreign key (team_id) references teams (team_id)\n);\n\ncreate table captains (\n    captain_id integer primary key,\n    name varchar(50) not null,\n    team_id integer not null,\n    foreign key (team_id) references teams (team_id)\n);\n\ncreate table games (\n    game_id integer primary key,\n    week integer not null,\n    home_team_id integer not null,\n    away_team_id integer not null,\n    foreign key (home_team_id) references teams (team_id),\n    foreign key (away_team_id) references teams (team_id)\n);\n Give me a sqlite select statement that answers the question. Only respond with sqlite syntax. If there is an error do not explain it!",
+  "questionResults": [
+    {
+      "question": "Which teams are in the AFC?",
+      "sql": "SELECT teams.name\nFROM teams\nJOIN conferences ON teams.conference_id = conferences.conference_id\nWHERE conferences.name = 'AFC';",
+      "queryRawResponse": "[('Bills',), ('Dolphins',), ('Patriots',), ('Jets',), ('Ravens',), ('Bengals',), ('Browns',), ('Steelers',), ('Texans',), ('Colts',), ('Jaguars',), ('Titans',), ('Broncos',), ('Chiefs',), ('Raiders',), ('Chargers',)]",
+      "friendlyResponse": "The AFC teams are the Bills, Dolphins, Patriots, Jets, Ravens, Bengals, Browns, Steelers, Texans, Colts, Jaguars, Titans, Broncos, Chiefs, Raiders, and Chargers.",
+      "error": "None"
+    },
+    {
+      "question": "Who is the head coach of the Kansas City Chiefs?",
+      "sql": "SELECT coaches.name FROM coaches JOIN teams ON coaches.team_id = teams.team_id WHERE teams.city = 'Kansas City' AND teams.name = 'Chiefs';",
+      "queryRawResponse": "[('Andy Reid',)]",
+      "friendlyResponse": "The head coach of the Kansas City Chiefs is Andy Reid!",
+      "error": "None"
+    },
+    {
+      "question": "Who is the team captain of the Buffalo Bills?",
+      "sql": "SELECT captains.name FROM captains JOIN teams ON captains.team_id = teams.team_id WHERE teams.city = 'Buffalo' AND teams.name = 'Bills';",
+      "queryRawResponse": "[('Josh Allen',)]",
+      "friendlyResponse": "Josh Allen is the team captain of the Buffalo Bills!",
+      "error": "None"
+    },
+    {
+      "question": "Which teams play in week 1?",
+      "sql": "SELECT DISTINCT t.name\nFROM teams t\nJOIN games g ON t.team_id = g.home_team_id OR t.team_id = g.away_team_id\nWHERE g.week = 1;",
+      "queryRawResponse": "[('Patriots',), ('Seahawks',), ('Rams',), ('49ers',), ('Bears',), ('Panthers',), ('Bengals',), ('Buccaneers',), ('Lions',), ('Saints',), ('Bills',), ('Texans',), ('Ravens',), ('Colts',), ('Browns',), ('Jaguars',), ('Steelers',), ('Falcons',), ('Jets',), ('Titans',), ('Chargers',), ('Cardinals',), ('Dolphins',), ('Raiders',), ('Packers',), ('Vikings',), ('Eagles',), ('Commanders',), ('Cowboys',), ('Giants',), ('Broncos',), ('Chiefs',)]",
+      "friendlyResponse": "All 32 teams play in week 1: Patriots, Seahawks, Rams, 49ers, Bears, Panthers, Bengals, Buccaneers, Lions, Saints, Bills, Texans, Ravens, Colts, Browns, Jaguars, Steelers, Falcons, Jets, Titans, Chargers, Cardinals, Dolphins, Raiders, Packers, Vikings, Eagles, Commanders, Cowboys, Giants, Broncos, and Chiefs.",
+      "error": "None"
+    },
+    {
+      "question": "Which AFC teams play at home in week 2?",
+      "sql": "SELECT teams.name\nFROM teams\nJOIN conferences ON teams.conference_id = conferences.conference_id\nJOIN games ON teams.team_id = games.home_team_id\nWHERE conferences.name = 'AFC' AND games.week = 2;",
+      "queryRawResponse": "[('Bills',), ('Ravens',), ('Texans',), ('Patriots',), ('Jets',), ('Titans',), ('Broncos',), ('Chargers',), ('Chiefs',)]",
+      "friendlyResponse": "The AFC teams playing at home in week 2 are the Bills, Ravens, Texans, Patriots, Jets, Titans, Broncos, Chargers, and Chiefs.",
+      "error": "None"
+    },
+    {
+      "question": "Who coaches the team that Patrick Mahomes captains?",
+      "sql": "SELECT coaches.name FROM coaches JOIN captains ON coaches.team_id = captains.team_id WHERE captains.name = 'Patrick Mahomes';",
+      "queryRawResponse": "[('Andy Reid',)]",
+      "friendlyResponse": "Andy Reid coaches Patrick Mahomes\u2019s team.",
+      "error": "None"
+    }
+  ]
+}

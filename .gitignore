@@ -1,0 +1,6 @@
+# Put your real xAI key in config.json. Never commit that file.
+config.json
+
+# Generated when you run db_bot.py
+aidb.sqlite
+__pycache__/
